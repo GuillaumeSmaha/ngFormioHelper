@@ -125,6 +125,7 @@ angular.module('ngFormBuilderHelper')
           type: 'success',
           message: 'Successfully ' + method + ' form!'
         });
+        $scope.form = form;
         $state.go($scope.basePath + 'form.view', {formId: form._id});
       }, FormioAlerts.onError.bind(FormioAlerts));
     };
