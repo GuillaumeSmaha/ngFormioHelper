@@ -269,6 +269,7 @@ angular.module('ngFormioHelper')
 angular.module('ngFormioHelper', [
   'formio',
   'ngFormioGrid',
+  'ngTagsInput',
   'ui.router'
 ])
 .filter('capitalize', [function () {
