@@ -16,6 +16,10 @@
     <label for="display" class="control-label">Display as</label>
     <select class="form-control" id="display" ng-options="display.name as display.title for display in formDisplays" ng-model="form.display" style="width: 200px;">
     </select>
+  <div id="form-group-path" class="form-group">
+    <label for="tags" class="control-label">Tags</label>
+    <tags-input ng-model="tags" ng-change="updateFormTags()" id="tags">
+    </tags-input>
   </div>
   <input type="hidden" ng-model="form.type"/>
   <div ng-include="'formio-helper/formbuilder/settings.html'"></div>
