@@ -191,9 +191,11 @@ angular.module('ngFormBuilderHelper')
       display: 'form',
       components:[],
       type: ($stateParams.formType ? $stateParams.formType : 'form'),
-      tags: [formTag]
+      tags: [formTag],
+      settings: {}
     };
     $scope.tags = [{text: formTag}];
+    $scope.settings = [];
     $scope.formio = new Formio($scope.formUrl);
     $scope.formDisplays = [
       {
@@ -213,6 +215,10 @@ angular.module('ngFormBuilderHelper')
         $scope.form = form;
         var tags = form.tags || [];
         $scope.tags = tags.map(function(tag) { return {text: tag}; });
+        var settings = form.settings || {};
+        Object.keys(settings).map(function(key, index) {
+          $scope.settings.push({key: key, value: settings[key]});
+        });
         return form;
       }, FormioAlerts.onError.bind(FormioAlerts));
     }
@@ -264,8 +270,34 @@ angular.module('ngFormBuilderHelper')
 
     // Update form tags
     $scope.updateFormtags = function() {
-      if (!$scope.form.name || $scope.form.name === _.camelCase(oldTitle)) {
-        $scope.form.tags = $scope.tags.map(function(tag) { return tag.text; });
+      $scope.form.tags = $scope.tags.map(function(tag) { return tag.text; });
+    };
+
+    // Update form setttings
+    $scope.updateSettings = function() {
+      var settings = {};
+      for(var index in $scope.settings) {
+        settings[$scope.settings[index].key] = $scope.settings[index].value;
+      }
+      $scope.form.settings = settings;
+    };
+
+    // Add a setting in the list
+    $scope.addSetting = function() {
+      if (typeof $scope.form.settings[''] == 'undefined') {
+        $scope.settings.push({key: '', value: ''});
+        $scope.updateSettings();
+      }
+    };
+
+    // Remove a settings
+    $scope.removeSetting = function(key) {
+      for(var index in $scope.settings) {
+        if ($scope.settings[index].key == key) {
+          $scope.settings.splice(index, 1);
+          $scope.updateSettings();
+          break;
+        }
       }
     };
 
@@ -592,7 +624,7 @@ angular.module('ngFormBuilderHelper', [
     );
 
     $templateCache.put('formio-helper/formbuilder/settings.html',
-      "\n"
+      "\n<div id=\"form-group-settings\" class=\"form-group\">\n    <label for=\"settings\" class=\"control-label\">Custom Settings</label>\n\n    <div ng-repeat=\"setting in settings\" class=\"input-group\">\n        <input type=\"text\" class=\"form-control\" ng-model=\"setting.key\" placeholder=\"Key\" ng-change=\"updateSettings()\">\n        <div class=\"input-group-addon\">=</div>\n        <input type=\"text\" class=\"form-control\" ng-model=\"setting.value\" placeholder=\"Value\" ng-change=\"updateSettings()\">\n        <div class=\"input-group-addon\">\n            <div class=\"btn btn-xxs btn-danger component-settings-button\" title=\"Remvove\" ng-click=\"removeSetting(setting.key)\">\n                <span class=\"glyphicon glyphicon-remove\"></span>\n            </div>\n        </div>\n    </div>\n</div>\n<div class=\"form-group\">\n    <input type=\"button\" class=\"btn btn-primary\" ng-click=\"addSetting()\" value=\"Add a setting\" />\n</div>\n"
     );
 
     $templateCache.put('formio-helper/formbuilder/view.html',

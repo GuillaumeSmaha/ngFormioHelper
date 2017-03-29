@@ -1,1 +1,18 @@
 
+<div id="form-group-settings" class="form-group">
+    <label for="settings" class="control-label">Custom Settings</label>
+
+    <div ng-repeat="setting in settings" class="input-group">
+        <input type="text" class="form-control" ng-model="setting.key" placeholder="Key" ng-change="updateSettings()">
+        <div class="input-group-addon">=</div>
+        <input type="text" class="form-control" ng-model="setting.value" placeholder="Value" ng-change="updateSettings()">
+        <div class="input-group-addon">
+            <div class="btn btn-xxs btn-danger component-settings-button" title="Remvove" ng-click="removeSetting(setting.key)">
+                <span class="glyphicon glyphicon-remove"></span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <input type="button" class="btn btn-primary" ng-click="addSetting()" value="Add a setting" />
+</div>

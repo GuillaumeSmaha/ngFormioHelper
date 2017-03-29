@@ -26,9 +26,11 @@ angular.module('ngFormBuilderHelper')
       display: 'form',
       components:[],
       type: ($stateParams.formType ? $stateParams.formType : 'form'),
-      tags: [formTag]
+      tags: [formTag],
+      settings: {}
     };
     $scope.tags = [{text: formTag}];
+    $scope.settings = [];
     $scope.formio = new Formio($scope.formUrl);
     $scope.formDisplays = [
       {
@@ -48,6 +50,10 @@ angular.module('ngFormBuilderHelper')
         $scope.form = form;
         var tags = form.tags || [];
         $scope.tags = tags.map(function(tag) { return {text: tag}; });
+        var settings = form.settings || {};
+        Object.keys(settings).map(function(key, index) {
+          $scope.settings.push({key: key, value: settings[key]});
+        });
         return form;
       }, FormioAlerts.onError.bind(FormioAlerts));
     }
@@ -99,8 +105,34 @@ angular.module('ngFormBuilderHelper')
 
     // Update form tags
     $scope.updateFormtags = function() {
-      if (!$scope.form.name || $scope.form.name === _.camelCase(oldTitle)) {
-        $scope.form.tags = $scope.tags.map(function(tag) { return tag.text; });
+      $scope.form.tags = $scope.tags.map(function(tag) { return tag.text; });
+    };
+
+    // Update form setttings
+    $scope.updateSettings = function() {
+      var settings = {};
+      for(var index in $scope.settings) {
+        settings[$scope.settings[index].key] = $scope.settings[index].value;
+      }
+      $scope.form.settings = settings;
+    };
+
+    // Add a setting in the list
+    $scope.addSetting = function() {
+      if (typeof $scope.form.settings[''] == 'undefined') {
+        $scope.settings.push({key: '', value: ''});
+        $scope.updateSettings();
+      }
+    };
+
+    // Remove a settings
+    $scope.removeSetting = function(key) {
+      for(var index in $scope.settings) {
+        if ($scope.settings[index].key == key) {
+          $scope.settings.splice(index, 1);
+          $scope.updateSettings();
+          break;
+        }
       }
     };
 
