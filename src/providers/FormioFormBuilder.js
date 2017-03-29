@@ -66,13 +66,19 @@ angular.module('ngFormBuilderHelper')
             url: '/edit',
             ncyBreadcrumb: {skip: true},
             templateUrl: _.get(templates, 'form.edit', 'formio-helper/formbuilder/edit.html'),
-            controller: ['$scope', '$controller', execute('form.edit')]
+            controller: ['$scope', '$controller', 'FormController', execute('form.edit')]
           })
           .state(basePath + 'form.delete', {
             url: '/delete',
             ncyBreadcrumb: {skip: true},
             templateUrl: _.get(templates, 'form.delete', 'formio-helper/formbuilder/delete.html'),
             controller: ['$scope', '$controller', execute('form.delete')]
+          })
+          .state(basePath + 'form.settings', {
+            url: '/settings',
+            ncyBreadcrumb: {skip: true},
+            templateUrl: _.get(templates, 'form.settings', 'formio-helper/formbuilder/settings.html'),
+            controller: ['$scope', '$controller', 'FormController', execute('form.settings')]
           });
 
         var formStates = {};

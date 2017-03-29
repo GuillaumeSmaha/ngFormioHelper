@@ -96,6 +96,9 @@ angular.module('ngFormBuilderHelper')
       if (!$scope.form.name || $scope.form.name === _.camelCase(oldTitle)) {
         $scope.form.name = _.camelCase($scope.form.title);
       }
+      if ($scope.$parent && $scope.$parent.form) {
+        $scope.$parent.form.title = $scope.form.title;
+      }
     };
 
     // When display is updated
@@ -184,7 +187,6 @@ angular.module('ngFormBuilderHelper')
           type: 'success',
           message: 'Successfully ' + method + ' form!'
         });
-        $scope.form = form;
         $state.go($scope.basePath + 'form.view', {formId: form._id});
       }, FormioAlerts.onError.bind(FormioAlerts));
     };

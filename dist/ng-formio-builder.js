@@ -261,6 +261,9 @@ angular.module('ngFormBuilderHelper')
       if (!$scope.form.name || $scope.form.name === _.camelCase(oldTitle)) {
         $scope.form.name = _.camelCase($scope.form.title);
       }
+      if ($scope.$parent && $scope.$parent.form) {
+        $scope.$parent.form.title = $scope.form.title;
+      }
     };
 
     // When display is updated
@@ -349,7 +352,6 @@ angular.module('ngFormBuilderHelper')
           type: 'success',
           message: 'Successfully ' + method + ' form!'
         });
-        $scope.form = form;
         $state.go($scope.basePath + 'form.view', {formId: form._id});
       }, FormioAlerts.onError.bind(FormioAlerts));
     };
@@ -616,15 +618,15 @@ angular.module('ngFormBuilderHelper', [
     );
 
     $templateCache.put('formio-helper/formbuilder/edit.html',
-      "<form role=\"form\" novalidate>\n  <div id=\"form-group-title\" class=\"form-group\">\n    <label for=\"title\" class=\"control-label\">Title</label>\n    <input type=\"text\" ng-model=\"form.title\" ng-change=\"titleChange('{{form.title}}')\" class=\"form-control\" id=\"title\" placeholder=\"Enter the form title\"/>\n  </div>\n  <div id=\"form-group-name\" class=\"form-group\">\n    <label for=\"name\" class=\"control-label\">Name</label>\n    <input type=\"text\" ng-model=\"form.name\" class=\"form-control\" id=\"name\" placeholder=\"Enter the form machine name\"/>\n  </div>\n  <div id=\"form-group-path\" class=\"form-group\">\n    <label for=\"path\" class=\"control-label\">Path</label>\n    <input type=\"text\" class=\"form-control\" id=\"path\" ng-model=\"form.path\" placeholder=\"example\" style=\"width: 200px; text-transform: lowercase\">\n    <small>The path alias for this form.</small>\n  </div>\n  <div id=\"form-group-title\" class=\"form-group\">\n    <label for=\"display\" class=\"control-label\">Display as</label>\n    <select class=\"form-control\" id=\"display\" ng-options=\"display.name as display.title for display in formDisplays\" ng-model=\"form.display\" style=\"width: 200px;\">\n    </select>\n  <div id=\"form-group-path\" class=\"form-group\">\n    <label for=\"tags\" class=\"control-label\">Tags</label>\n    <tags-input ng-model=\"tags\" ng-change=\"updateFormTags()\" id=\"tags\">\n    </tags-input>\n  </div>\n  <input type=\"hidden\" ng-model=\"form.type\"/>\n  <div ng-include=\"'formio-helper/formbuilder/settings.html'\"></div>\n  <form-builder form=\"form\" src=\"formUrl\"></form-builder>\n  <div class=\"form-group pull-right\">\n    <a class=\"btn btn-default\" ng-click=\"cancel()\">Cancel</a>\n    <input type=\"submit\" class=\"btn btn-primary\" ng-click=\"saveForm()\" value=\"{{formId ? 'Save' : 'Create'}} {{ capitalize(form.type)  }}\" />\n  </div>\n</form>\n"
+      "<form role=\"form\" novalidate>\n  <div id=\"form-group-title\" class=\"form-group\">\n    <label for=\"title\" class=\"control-label\">Title</label>\n    <input type=\"text\" ng-model=\"form.title\" ng-change=\"titleChange('{{form.title}}')\" class=\"form-control\" id=\"title\" placeholder=\"Enter the form title\"/>\n  </div>\n  <div id=\"form-group-name\" class=\"form-group\">\n    <label for=\"name\" class=\"control-label\">Name</label>\n    <input type=\"text\" ng-model=\"form.name\" class=\"form-control\" id=\"name\" placeholder=\"Enter the form machine name\"/>\n  </div>\n  <div id=\"form-group-path\" class=\"form-group\">\n    <label for=\"path\" class=\"control-label\">Path</label>\n    <input type=\"text\" class=\"form-control\" id=\"path\" ng-model=\"form.path\" placeholder=\"example\" style=\"width: 200px; text-transform: lowercase\">\n    <small>The path alias for this form.</small>\n  </div>\n  <div id=\"form-group-title\" class=\"form-group\">\n    <label for=\"display\" class=\"control-label\">Display as</label>\n    <select class=\"form-control\" id=\"display\" ng-options=\"display.name as display.title for display in formDisplays\" ng-model=\"form.display\" style=\"width: 200px;\">\n    </select>\n  <div id=\"form-group-path\" class=\"form-group\">\n    <label for=\"tags\" class=\"control-label\">Tags</label>\n    <tags-input ng-model=\"tags\" ng-change=\"updateFormTags()\" id=\"tags\">\n    </tags-input>\n  </div>\n  <input type=\"hidden\" ng-model=\"form.type\"/>\n  <form-builder form=\"form\" src=\"formUrl\"></form-builder>\n  <div class=\"form-group pull-right\">\n    <a class=\"btn btn-default\" ng-click=\"cancel()\">Cancel</a>\n    <input type=\"submit\" class=\"btn btn-primary\" ng-click=\"saveForm()\" value=\"{{formId ? 'Save' : 'Create'}} {{ capitalize(form.type)  }}\" />\n  </div>\n</form>\n"
     );
 
     $templateCache.put('formio-helper/formbuilder/form.html',
-      "<h2>{{form.title}}</h2>\n<ul class=\"nav nav-tabs\">\n  <li role=\"presentation\" ng-if=\"isAdministrator || hasAccess(form.name, ['create_own', 'create_all'])\" ng-class=\"{active:isActive(basePath + 'form.view')}\"><a ui-sref=\"{{ basePath }}form.view()\">Enter Data</a></li>\n  <li role=\"presentation\" ng-if=\"isAdministrator || hasAccess(form.name, ['read_own', 'read_all'])\" ng-class=\"{active:isActive(basePath + 'form.submission')}\"><a ui-sref=\"{{ basePath }}form.submissionIndex()\">View Data</a></li>\n  <li role=\"presentation\" ng-if=\"isAdministrator || formAccess(['edit_all', 'create_all'])\" ng-class=\"{active:isActive(basePath + 'form.edit')}\"><a ui-sref=\"{{ basePath }}form.edit()\">Edit Form</a></li>\n  <li role=\"presentation\" ng-if=\"isAdministrator || formAccess(['edit_all', 'create_all'])\" ng-class=\"{active:isActive(basePath + 'form.action')}\"><a ui-sref=\"{{ basePath }}form.actionIndex()\">Form Actions</a></li>\n  <li role=\"presentation\" ng-if=\"isAdministrator || formAccess(['edit_all', 'create_all'])\" ng-class=\"{active:isActive(basePath + 'form.permission')}\"><a ui-sref=\"{{ basePath }}form.permission()\">Access</a></li>\n</ul>\n<div ui-view></div>\n"
+      "<h2>{{form.title}}</h2>\n<ul class=\"nav nav-tabs\">\n  <li role=\"presentation\" ng-if=\"isAdministrator || hasAccess(form.name, ['create_own', 'create_all'])\" ng-class=\"{active:isActive(basePath + 'form.view')}\"><a ui-sref=\"{{ basePath }}form.view()\">Enter Data</a></li>\n  <li role=\"presentation\" ng-if=\"isAdministrator || hasAccess(form.name, ['read_own', 'read_all'])\" ng-class=\"{active:isActive(basePath + 'form.submission')}\"><a ui-sref=\"{{ basePath }}form.submissionIndex()\">View Data</a></li>\n  <li role=\"presentation\" ng-if=\"isAdministrator || formAccess(['edit_all', 'create_all'])\" ng-class=\"{active:isActive(basePath + 'form.edit')}\"><a ui-sref=\"{{ basePath }}form.edit()\">Edit Form</a></li>\n  <li role=\"presentation\" ng-if=\"isAdministrator || formAccess(['edit_all', 'create_all'])\" ng-class=\"{active:isActive(basePath + 'form.action')}\"><a ui-sref=\"{{ basePath }}form.actionIndex()\">Form Actions</a></li>\n  <li role=\"presentation\" ng-if=\"isAdministrator || formAccess(['edit_all', 'create_all'])\" ng-class=\"{active:isActive(basePath + 'form.permission')}\"><a ui-sref=\"{{ basePath }}form.permission()\">Access</a></li>\n  <li role=\"presentation\" ng-if=\"isAdministrator || formAccess(['edit_all', 'create_all'])\" ng-class=\"{active:isActive(basePath + 'form.settings')}\"><a ui-sref=\"{{ basePath }}form.settings()\">Settings</a></li>\n</ul>\n<div ui-view></div>\n"
     );
 
     $templateCache.put('formio-helper/formbuilder/settings.html',
-      "\n<div id=\"form-group-settings\" class=\"form-group\">\n    <label for=\"settings\" class=\"control-label\">Custom Settings</label>\n\n    <div ng-repeat=\"setting in settings\" class=\"input-group\">\n        <input type=\"text\" class=\"form-control\" ng-model=\"setting.key\" placeholder=\"Key\" ng-change=\"updateSettings()\">\n        <div class=\"input-group-addon\">=</div>\n        <input type=\"text\" class=\"form-control\" ng-model=\"setting.value\" placeholder=\"Value\" ng-change=\"updateSettings()\">\n        <div class=\"input-group-addon\">\n            <div class=\"btn btn-xxs btn-danger component-settings-button\" title=\"Remvove\" ng-click=\"removeSetting(setting.key)\">\n                <span class=\"glyphicon glyphicon-remove\"></span>\n            </div>\n        </div>\n    </div>\n</div>\n<div class=\"form-group\">\n    <input type=\"button\" class=\"btn btn-primary\" ng-click=\"addSetting()\" value=\"Add a setting\" />\n</div>\n"
+      "<form role=\"form\" novalidate>\n    <div class=\"panel panel-default\">\n        <div class=\"panel-heading\">\n        <h3 class=\"panel-title\">Advanced Settings</h3>\n        </div>\n        <div class=\"panel-body\">\n            <div id=\"form-group-settings\" class=\"form-group\">\n                <label for=\"settings\" class=\"control-label\">Add custom key/value properties in the form</label>\n\n                <div ng-repeat=\"setting in settings\" class=\"input-group\">\n                    <input type=\"text\" class=\"form-control\" ng-model=\"setting.key\" placeholder=\"Key\" ng-change=\"updateSettings()\">\n                    <div class=\"input-group-addon\">=</div>\n                    <input type=\"text\" class=\"form-control\" ng-model=\"setting.value\" placeholder=\"Value\" ng-change=\"updateSettings()\">\n                    <div class=\"input-group-addon\">\n                        <div class=\"btn btn-xxs btn-danger component-settings-button\" title=\"Remvove\" ng-click=\"removeSetting(setting.key)\">\n                            <span class=\"glyphicon glyphicon-remove\"></span>\n                        </div>\n                    </div>\n                </div>\n            </div>\n            <div class=\"form-group\">\n                <input type=\"button\" class=\"btn btn-primary\" ng-click=\"addSetting()\" value=\"Add a setting\" />\n            </div>\n        </div>\n    </div>\n    <div class=\"form-group pull-right\">\n        <a class=\"btn btn-default\" ng-click=\"cancel()\">Cancel</a>\n        <input type=\"submit\" class=\"btn btn-primary\" ng-click=\"saveForm()\" value=\"Save\" />\n    </div>\n</form>\n"
     );
 
     $templateCache.put('formio-helper/formbuilder/view.html',
@@ -771,13 +773,19 @@ angular.module('ngFormBuilderHelper')
             url: '/edit',
             ncyBreadcrumb: {skip: true},
             templateUrl: _.get(templates, 'form.edit', 'formio-helper/formbuilder/edit.html'),
-            controller: ['$scope', '$controller', execute('form.edit')]
+            controller: ['$scope', '$controller', 'FormController', execute('form.edit')]
           })
           .state(basePath + 'form.delete', {
             url: '/delete',
             ncyBreadcrumb: {skip: true},
             templateUrl: _.get(templates, 'form.delete', 'formio-helper/formbuilder/delete.html'),
             controller: ['$scope', '$controller', execute('form.delete')]
+          })
+          .state(basePath + 'form.settings', {
+            url: '/settings',
+            ncyBreadcrumb: {skip: true},
+            templateUrl: _.get(templates, 'form.settings', 'formio-helper/formbuilder/settings.html'),
+            controller: ['$scope', '$controller', 'FormController', execute('form.settings')]
           });
 
         var formStates = {};
